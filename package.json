@@ -1,6 +1,6 @@
 {
   "name": "stock-scraper",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Scrapes stock data for analysis",
   "main": "index.js",
   "scripts": {

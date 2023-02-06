@@ -31,3 +31,7 @@ module.exports = {
 ```
 
 > The free ```alphavantage.co``` api key only allows 5 reads per minute...or something like that
+
+## Log
+
+20230205 Added ability to append new lines to csv

@@ -1,3 +1,10 @@
 module.exports = {
-  apikey: "WPU9TLWQ83NYUJ1",
+  apikey: "",
+  tickers: [
+    "IBM",
+    "GOOG",
+    "INTC",
+    "AMZN",
+    "MPC",
+  ]
 }

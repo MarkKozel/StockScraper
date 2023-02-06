@@ -2,6 +2,7 @@
 var request = require('request');
 const config = require('./config');
 const fs = require('fs');
+const FileHandler = require('./FileHandler').FileHandler;
 
 const WeekdayOfInterest = 3; //Wed
 const series = `TIME_SERIES_INTRADAY`;
@@ -15,6 +16,8 @@ config.tickers.forEach(key => {
 function getData(stockSymbol) {
   const fileName = `./${stockSymbol}.csv`;
   console.info(`Getting data for ${stockSymbol}:`);
+
+  let file = new FileHandler(fileName);
 
   let url = `https://www.alphavantage.co/query?function=${series}&symbol=${stockSymbol}&interval=${sampleInterval}&outputsize=${outputSize}&datatype=json&apikey=${config.apikey}`;
   console.log(`Request: ${url}`);
@@ -35,11 +38,12 @@ function getData(stockSymbol) {
       const tZone = meta[`6. Time Zone`];
 
       //Write Header to file
-      try {
-        fs.writeFileSync(fileName, `date, price, volume, ${stockSymbol} as of ${asOfDate}, Data from Noon Wednesdays ${tZone}`);
-      } catch (err) {
-        console.error(err);
-      }
+      file.updateHeader(`date, price, volume, ${stockSymbol} as of ${asOfDate}, Data from Noon Wednesdays ${tZone}`);
+      // try {
+      //   fs.writeFileSync(fileName, `date, price, volume, ${stockSymbol} as of ${asOfDate}, Data from Noon Wednesdays ${tZone}`);
+      // } catch (err) {
+      //   console.error(err);
+      // }
 
       //Write date elements to file
       const hourly = data['Time Series (60min)'];
@@ -50,14 +54,17 @@ function getData(stockSymbol) {
         if ((theDate.getHours() == 12) && (theDate.getDay() === WeekdayOfInterest)) {
           const stockValues = hourly[key];
           console.info(theDate.toString(), stockValues[`4. close`], stockValues[`5. volume`]);
-          try {
-            const dataStr = `${theDate.getMonth() + 1}-${theDate.getDate()}-${theDate.getFullYear()}`;
-            fs.appendFileSync(fileName, `\n${dataStr}, ${stockValues[`4. close`]}, ${stockValues[`5. volume`]}`);
-          } catch (err) {
-            console.error(err);
-          }
+          // try {
+          const dataStr = `${theDate.getMonth() + 1}-${theDate.getDate()}-${theDate.getFullYear()}`;
+          file.insertData(dataStr, stockValues[`4. close`], stockValues[`5. volume`]);
+          // fs.appendFileSync(fileName, `\n${dataStr}, ${stockValues[`4. close`]}, ${stockValues[`5. volume`]}`);
+          // } catch (err) {
+          //   console.error(err);
+          // }
         }
       }
+      file.writeCSV();
     }
   });
+
 }
